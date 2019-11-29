@@ -23,29 +23,29 @@ BATCH_SIZE = 128
 CHECKPOINT_DIR = os.path.join(basedir, 'checkpoint')
 RESULTS_DIR = os.path.join(basedir, 'results')
 DATASET_DIR = os.path.join(basedir, 'datasets')
-DATASET_DIR_IMAGENET = '/mnt/ilsvrc2012'
+DATASET_DIR_IMAGENET = '/mnt/p3700/gilsho/ilsvrc2012'
 
 
 # ------------------------------------------------
 #              Statistics Parameters
 # ------------------------------------------------
 # Used for the values histograms
-STATS_VAL_HIST_MIN = -1
-STATS_VAL_HIST_MAX = 1
-STATS_VAL_HIST_STEP = 0.2
+STATS_VAL_HIST_MIN = -2
+STATS_VAL_HIST_MAX = 2
+STATS_VAL_HIST_STEP = 0.1
 STATS_VAL_HIST_BINS = int((STATS_VAL_HIST_MAX - STATS_VAL_HIST_MIN) / STATS_VAL_HIST_STEP)
 
 # Used for error to threshold table
-STATS_ERR_TO_TH_MIN = -1
-STATS_ERR_TO_TH_MAX = 1
-STATS_ERR_TO_TH_STEP = 0.2
+STATS_ERR_TO_TH_MIN = -1.3
+STATS_ERR_TO_TH_MAX = 1.3
+STATS_ERR_TO_TH_STEP = 0.1
 STATS_ERR_TO_TH_MAX = STATS_ERR_TO_TH_MAX + STATS_ERR_TO_TH_STEP
 STATS_ERR_TO_TH_BINS = round((STATS_ERR_TO_TH_MAX - STATS_ERR_TO_TH_MIN) / STATS_ERR_TO_TH_STEP)
 
 # Used for the mask values histogram
-STATS_MASK_VAL_HIST_MIN = -1
-STATS_MASK_VAL_HIST_MAX = 1
-STATS_MASK_VAL_HIST_STEP = 0.2
+STATS_MASK_VAL_HIST_MIN = -1.3
+STATS_MASK_VAL_HIST_MAX = 1.3
+STATS_MASK_VAL_HIST_STEP = 0.1
 STATS_MASK_VAL_HIST_MAX = STATS_MASK_VAL_HIST_MAX + STATS_MASK_VAL_HIST_STEP
 STATS_MASK_VAL_HIST_BINS = round((STATS_MASK_VAL_HIST_MAX - STATS_MASK_VAL_HIST_MIN) / STATS_MASK_VAL_HIST_STEP)
 
@@ -134,5 +134,19 @@ def get_dataset(dataset):
         return Datasets.get('CIFAR100', DATASET_DIR)
     elif dataset == 'imagenet':
         return Datasets.get('ImageNet', DATASET_DIR_IMAGENET)
+    else:
+        raise NotImplementedError
+
+
+def get_mac_ops(arch, dataset):
+    # TODO: the MAC operations shouldn't be defined here, but should probably be part of the model itself
+    if arch == 'alexnet' and dataset == 'imagenet':
+        return [80621568, 112140288, 149520384, 99680256]
+    elif arch == 'resnet18' and dataset == 'imagenet':
+        return [115605504, 115605504, 115605504, 115605504, 57802752, 115605504, 115605504, 115605504, 57802752,
+                115605504, 115605504, 115605504, 57802752, 115605504, 115605504, 115605504]
+    elif arch == 'vgg16' and dataset == 'imagenet':
+        return [86704128, 1849688064, 924844032, 1849688064, 924844032, 1849688064, 1849688064, 924844032,
+                1849688064, 1849688064, 462422016, 462422016, 462422016]
     else:
         raise NotImplementedError

@@ -5,6 +5,7 @@ import Config as cfg
 import numpy as np
 from tabulate import tabulate
 from StatsLogger import StatsLogger
+from ThresholdOptimizer import ThresholdOptimizer
 
 
 class NeuralNet:
@@ -37,7 +38,9 @@ class NeuralNet:
         else:
             self.model = cfg.MODELS[self.arch]()
 
-        self.parallel_model = torch.nn.DataParallel(self.model).cuda(self.device)
+        # self.parallel_model = torch.nn.DataParallel(self.model).cuda(self.device)
+        # Disabled parallel model. Statistics collection does not support GPU parallelism.
+        self.parallel_model = self.model.cuda(self.device)
         self.criterion = torch.nn.CrossEntropyLoss().cuda(self.device)
         self.criterion_pred = torch.nn.MSELoss().cuda(self.device)
 
@@ -55,6 +58,8 @@ class NeuralNet:
         self.stats.add_tbl('mask_values_hist')
         self.stats.add_tbl('err_to_th')
         self.stats.add_tbl('roc')
+
+        self.th_opt = ThresholdOptimizer()
 
     def test(self, test_gen, stats=None, reset_output=True):
         batch_time = self.AverageMeter('Time', ':6.3f')
@@ -118,6 +123,7 @@ class NeuralNet:
         for epoch in range(self.next_train_epoch, epochs):
             self._adjust_lr_rate(self.optimizer, epoch, lr_plan)
             self._train_step(train_gen, epoch, self.optimizer)
+            torch.cuda.empty_cache()
             top1_acc = self.test(test_gen, stats=stats).item()
 
             if top1_acc > self.best_top1_acc:

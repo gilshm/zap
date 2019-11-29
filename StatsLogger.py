@@ -34,7 +34,7 @@ class StatsLogger:
             self._tbls[tbl_name]['headers'] = headers
 
     def get_tbl(self, tbl_name: str):
-        return self._tbls[tbl_name]
+        return self._tbls[tbl_name].copy()
 
     def get_tbl_normalized(self, tbl_name: str, norm_by_col: list, precision=2):
         tbl = self.get_tbl(tbl_name)
@@ -77,7 +77,7 @@ class StatsLogger:
 
             tbl = new_tbl
 
-        return tbl
+        return tbl.copy()
 
     def get_tbl_sum_normalized(self, tbl_name: str, norm_by_col: list, precision=2):
         tbl = self.get_tbl_sum(tbl_name)

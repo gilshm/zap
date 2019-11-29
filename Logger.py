@@ -27,15 +27,11 @@ class Logger:
         if log_file and self.log is not None:
             self.log.write(msg)
 
-    def write_title(self, msg, sub_msg=None, terminal=True, log_file=True, pad_width=40, pad_symbol='-'):
+    def write_title(self, msg, terminal=True, log_file=True, pad_width=40, pad_symbol='-'):
         self.write('', date=False)
         self.write(''.center(pad_width, pad_symbol), terminal=terminal, log_file=log_file, date=False)
         self.write(' {} '.format(msg).center(pad_width, pad_symbol), terminal=terminal, log_file=log_file, date=False)
         self.write(''.center(pad_width, pad_symbol), terminal=terminal, log_file=log_file, date=False)
-
-        if sub_msg is not None:
-            self.write(sub_msg, terminal=terminal, log_file=log_file, date=False)
-
         self.write('', date=False)
 
     def start_new_log(self, path=None, name=None, no_logfile=False):
